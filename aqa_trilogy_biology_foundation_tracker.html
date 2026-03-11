@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>AQA Combined Science Trilogy Biology Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            min-height: 100vh;
+            padding: 16px;
+            padding-bottom: 80px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #047857;
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #059669;
+            font-size: 14px;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #047857;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #065f46;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            background: #d1fae5;
+            border-radius: 12px;
+            height: 24px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #059669 0%, #047857 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-primary {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: #047857;
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #059669;
+            border: 2px solid #059669;
+        }
+
+        .btn-secondary:active {
+            background: #d1fae5;
+            transform: scale(0.98);
+        }
+
+        .paper-section {
+            margin-bottom: 20px;
+        }
+
+        .paper-header {
+            background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .topic {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .topic-header {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .topic-header:active {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+        }
+
+        .topic-title {
+            font-size: 16px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .topic-stats {
+            font-size: 13px;
+            margin-right: 12px;
+            opacity: 0.95;
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+            font-size: 20px;
+        }
+
+        .topic.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        .topic-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .topic.expanded .topic-content {
+            max-height: 10000px;
+        }
+
+        .statement-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #d1fae5;
+        }
+
+        .statement-item:last-child {
+            border-bottom: none;
+        }
+
+        .statement-text {
+            font-size: 15px;
+            color: #1f2937;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-btn:active {
+            transform: scale(0.97);
+        }
+
+        .status-btn.complete {
+            background: #dcfce7;
+            border-color: #16a34a;
+            color: #15803d;
+        }
+
+        .status-btn.practice {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #d97706;
+        }
+
+        .status-btn.review {
+            background: #fee2e2;
+            border-color: #dc2626;
+            color: #b91c1c;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+                padding-bottom: 70px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .stats-grid {
+                gap: 8px;
+            }
+
+            .stat-number {
+                font-size: 24px;
+            }
+
+            .topic-title {
+                font-size: 15px;
+            }
+
+            .statement-text {
+                font-size: 14px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AQA Combined Science: Trilogy Biology</h1>
+            <div class="subtitle">Foundation Tier Progress Tracker</div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="completeCount">0</span>
+                    <span class="stat-label">Complete ✅</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="practiceCount">0</span>
+                    <span class="stat-label">Practice ⚠️</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="reviewCount">0</span>
+                    <span class="stat-label">Review ❌</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="notStartedCount">0</span>
+                    <span class="stat-label">Not Started</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="toggleAll()">Expand All</button>
+                <button class="btn btn-secondary" onclick="exportProgress()">Export Progress</button>
+                <button class="btn btn-secondary" onclick="resetProgress()">Reset All</button>
+            </div>
+        </div>
+
+        <div id="topics"></div>
+    </div>
+
+    <script>
+        const topics = [
+            {
+                paper: 1,
+                name: "Topic 1: Cell Biology",
+                statements: [
+                    "I can describe the differences between eukaryotic and prokaryotic cells",
+                    "I can explain the functions of sub-cellular structures in animal and plant cells",
+                    "I can describe the functions of the nucleus, cytoplasm, cell membrane and mitochondria",
+                    "I can describe the additional structures in plant cells: chloroplasts, cell wall and vacuole",
+                    "I can explain how cells specialise to carry out particular functions",
+                    "I can describe examples of specialised cells: sperm, nerve, muscle, root hair, xylem and phloem",
+                    "I understand the importance of cell differentiation",
+                    "I can describe how microscopy techniques have developed over time",
+                    "I can explain the difference between magnification and resolution",
+                    "I can calculate magnification using the formula: magnification = image size ÷ real size",
+                    "I can describe the structure of chromosomes and DNA",
+                    "I can describe the stages of the cell cycle including mitosis",
+                    "I can explain the importance of mitosis in growth and development",
+                    "I can describe what stem cells are and their functions",
+                    "I can describe the uses of stem cells from embryos, adults and plant meristems",
+                    "I can explain diffusion and factors that affect the rate",
+                    "I can calculate surface area to volume ratios",
+                    "I can explain why exchange surfaces are needed in multicellular organisms",
+                    "I can describe osmosis as the diffusion of water through a partially permeable membrane",
+                    "I can describe active transport and how it differs from diffusion and osmosis"
+                ]
+            },
+            {
+                paper: 1,
+                name: "Topic 2: Organisation",
+                statements: [
+                    "I can describe the levels of organisation: cells, tissues, organs, organ systems",
+                    "I can explain how enzymes work using the lock and key theory",
+                    "I can describe how temperature and pH affect enzyme activity",
+                    "I can recall the sites of production and action of digestive enzymes",
+                    "I can describe how carbohydrases, proteases and lipases break down food",
+                    "I can explain the role of bile in digestion",
+                    "I can describe how to test for carbohydrates, lipids and proteins",
+                    "I can describe the structure and function of the heart",
+                    "I can explain how the structure of blood vessels relates to their function",
+                    "I can describe the functions of red blood cells, white blood cells and platelets",
+                    "I can explain how red and white blood cells are adapted to their functions",
+                    "I can describe coronary heart disease and its treatments",
+                    "I can evaluate treatments for heart disease including stents, statins and transplants",
+                    "I can explain the relationship between health and disease",
+                    "I can explain how lifestyle factors affect non-communicable diseases",
+                    "I can describe cancer as uncontrolled cell growth",
+                    "I can explain the difference between benign and malignant tumours",
+                    "I can explain how plant tissues are adapted to their functions",
+                    "I can describe the structure and function of xylem and phloem",
+                    "I can explain the process of transpiration and translocation"
+                ]
+            },
+            {
+                paper: 1,
+                name: "Topic 3: Infection and Response",
+                statements: [
+                    "I can describe how diseases are spread by bacteria, viruses, protists and fungi",
+                    "I can explain how the spread of diseases can be prevented",
+                    "I can describe viral diseases: measles, HIV and tobacco mosaic virus",
+                    "I can describe bacterial diseases: salmonella and gonorrhoea",
+                    "I can describe fungal diseases: rose black spot",
+                    "I can describe protist diseases: malaria",
+                    "I can describe the body's defence systems against pathogens",
+                    "I can explain the role of white blood cells in defence",
+                    "I can explain how vaccination prevents illness",
+                    "I can describe the use of antibiotics and painkillers",
+                    "I can explain why antibiotics cannot kill viral pathogens",
+                    "I can explain the problem of antibiotic resistance",
+                    "I can describe the discovery and development of new drugs",
+                    "I can explain the stages of drug testing including preclinical and clinical trials"
+                ]
+            },
+            {
+                paper: 1,
+                name: "Topic 4: Bioenergetics",
+                statements: [
+                    "I can describe photosynthesis as an endothermic reaction",
+                    "I can write the word equation for photosynthesis",
+                    "I can explain how temperature affects the rate of photosynthesis",
+                    "I can explain how light intensity affects the rate of photosynthesis",
+                    "I can explain how carbon dioxide concentration affects the rate of photosynthesis",
+                    "I can explain how chlorophyll affects the rate of photosynthesis",
+                    "I can describe the uses of glucose from photosynthesis",
+                    "I can describe cellular respiration as an exothermic reaction",
+                    "I can explain why organisms need energy",
+                    "I can write the word equation for aerobic respiration",
+                    "I can write the word equation for anaerobic respiration in muscles",
+                    "I can write the word equation for anaerobic respiration in yeast (fermentation)",
+                    "I can compare aerobic and anaerobic respiration",
+                    "I can describe how the body responds to exercise",
+                    "I can explain what oxygen debt is",
+                    "I can explain what metabolism is"
+                ]
+            },
+            {
+                paper: 2,
+                name: "Topic 5: Homeostasis and Response",
+                statements: [
+                    "I can explain what homeostasis is",
+                    "I can describe the components of control systems: receptors, coordination centres and effectors",
+                    "I can explain how the nervous system allows us to react to our surroundings",
+                    "I can describe the structure and function of the nervous system",
+                    "I can explain how reflex actions work",
+                    "I can describe the human endocrine system",
+                    "I can compare nervous and hormonal coordination",
+                    "I can identify the position of major glands in the body",
+                    "I can explain how the pancreas controls blood glucose concentration",
+                    "I can explain how insulin controls blood glucose levels",
+                    "I can describe Type 1 and Type 2 diabetes and their treatments",
+                    "I can compare Type 1 and Type 2 diabetes",
+                    "I can describe the roles of hormones in human reproduction",
+                    "I can explain the role of oestrogen and testosterone at puberty",
+                    "I can describe the roles of FSH, LH, oestrogen and progesterone in the menstrual cycle",
+                    "I can evaluate different methods of contraception",
+                    "I can describe hormonal and non-hormonal methods of contraception"
+                ]
+            },
+            {
+                paper: 2,
+                name: "Topic 6: Inheritance, Variation and Evolution",
+                statements: [
+                    "I can compare sexual and asexual reproduction",
+                    "I can explain how meiosis produces gametes",
+                    "I can describe the structure of DNA",
+                    "I can define what a genome is",
+                    "I can discuss the importance of understanding the human genome",
+                    "I can explain genetic terminology: gamete, chromosome, gene, allele, dominant, recessive",
+                    "I can explain genotype, phenotype, homozygous and heterozygous",
+                    "I can complete Punnett square diagrams for single gene crosses",
+                    "I can describe inherited disorders: polydactyly and cystic fibrosis",
+                    "I can explain how sex is determined (XX and XY chromosomes)",
+                    "I can explain how variation is caused by genes and environment",
+                    "I can describe evolution by natural selection",
+                    "I can explain how natural selection leads to evolution",
+                    "I can explain the process of selective breeding",
+                    "I can describe the benefits and risks of selective breeding",
+                    "I can describe genetic engineering and give examples",
+                    "I can explain the benefits and risks of genetic engineering",
+                    "I can describe evidence for evolution including fossils",
+                    "I can explain why the fossil record is incomplete",
+                    "I can describe factors that contribute to extinction",
+                    "I can explain how bacteria evolve resistance to antibiotics",
+                    "I can describe the Linnaean classification system",
+                    "I can describe the three-domain system"
+                ]
+            },
+            {
+                paper: 2,
+                name: "Topic 7: Ecology",
+                statements: [
+                    "I can describe the levels of organisation in an ecosystem",
+                    "I can explain interdependence and competition in a community",
+                    "I can describe what organisms compete for",
+                    "I can explain how abiotic factors affect communities",
+                    "I can explain how biotic factors affect communities",
+                    "I can describe how organisms are adapted to their environment",
+                    "I can describe what extremophiles are",
+                    "I can construct food chains showing producers and consumers",
+                    "I can explain predator-prey cycles",
+                    "I can describe how to measure population size using sampling techniques",
+                    "I can explain the importance of the carbon cycle",
+                    "I can explain the importance of the water cycle",
+                    "I can explain the role of microorganisms in cycling materials",
+                    "I can explain what biodiversity is and why it is important",
+                    "I can describe how human activities affect biodiversity",
+                    "I can explain how pollution affects biodiversity",
+                    "I can describe the impact of land use on biodiversity",
+                    "I can explain the impact of deforestation",
+                    "I can describe the biological consequences of global warming",
+                    "I can describe programmes to maintain biodiversity"
+                ]
+            }
+        ];
+
+        let progress = {};
+        let allExpanded = false;
+
+        function loadProgress() {
+            const saved = localStorage.getItem('aqaTriloBioFoundation');
+            if (saved) {
+                progress = JSON.parse(saved);
+            }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('aqaTriloBioFoundation', JSON.stringify(progress));
+        }
+
+        function renderTopics() {
+            const container = document.getElementById('topics');
+            container.innerHTML = '';
+
+            // Paper 1 topics
+            const paper1Div = document.createElement('div');
+            paper1Div.className = 'paper-section';
+            paper1Div.innerHTML = '<div class="paper-header">📄 Biology Paper 1 - Topics 1-4</div>';
+            container.appendChild(paper1Div);
+
+            topics.filter(t => t.paper === 1).forEach((topic, topicIndex) => {
+                const actualIndex = topics.indexOf(topic);
+                paper1Div.appendChild(createTopicElement(topic, actualIndex));
+            });
+
+            // Paper 2 topics
+            const paper2Div = document.createElement('div');
+            paper2Div.className = 'paper-section';
+            paper2Div.innerHTML = '<div class="paper-header">📄 Biology Paper 2 - Topics 5-7</div>';
+            container.appendChild(paper2Div);
+
+            topics.filter(t => t.paper === 2).forEach((topic, topicIndex) => {
+                const actualIndex = topics.indexOf(topic);
+                paper2Div.appendChild(createTopicElement(topic, actualIndex));
+            });
+
+            updateStats();
+        }
+
+        function createTopicElement(topic, topicIndex) {
+            const topicDiv = document.createElement('div');
+            topicDiv.className = 'topic';
+            
+            const stats = getTopicStats(topicIndex);
+            
+            topicDiv.innerHTML = `
+                <div class="topic-header" onclick="toggleTopic(${topicIndex})">
+                    <div class="topic-title">${topic.name}</div>
+                    <div class="topic-stats">${stats.complete}/${topic.statements.length}</div>
+                    <div class="chevron">▼</div>
+                </div>
+                <div class="topic-content">
+                    ${topic.statements.map((statement, stmtIndex) => `
+                        <div class="statement-item">
+                            <div class="statement-text">${statement}</div>
+                            <div class="button-group">
+                                <button class="status-btn ${getStatus(topicIndex, stmtIndex) === 'complete' ? 'complete' : ''}" 
+                                        onclick="setStatus(${topicIndex}, ${stmtIndex}, 'complete')">
+                                    ✅ Complete
+                                </button>
+                                <button class="status-btn ${getStatus(topicIndex, stmtIndex) === 'practice' ? 'practice' : ''}" 
+                                        onclick="setStatus(${topicIndex}, ${stmtIndex}, 'practice')">
+                                    ⚠️ Practice
+                                </button>
+                                <button class="status-btn ${getStatus(topicIndex, stmtIndex) === 'review' ? 'review' : ''}" 
+                                        onclick="setStatus(${topicIndex}, ${stmtIndex}, 'review')">
+                                    ❌ Review
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            return topicDiv;
+        }
+
+        function getStatus(topicIndex, stmtIndex) {
+            const key = `${topicIndex}-${stmtIndex}`;
+            return progress[key] || 'not-started';
+        }
+
+        function setStatus(topicIndex, stmtIndex, status) {
+            const key = `${topicIndex}-${stmtIndex}`;
+            const currentStatus = progress[key];
+            
+            if (currentStatus === status) {
+                delete progress[key];
+            } else {
+                progress[key] = status;
+            }
+            
+            saveProgress();
+            renderTopics();
+        }
+
+        function getTopicStats(topicIndex) {
+            const topic = topics[topicIndex];
+            let complete = 0;
+            
+            topic.statements.forEach((_, stmtIndex) => {
+                if (getStatus(topicIndex, stmtIndex) === 'complete') {
+                    complete++;
+                }
+            });
+            
+            return { complete, total: topic.statements.length };
+        }
+
+        function updateStats() {
+            let complete = 0, practice = 0, review = 0, notStarted = 0;
+            let totalStatements = 0;
+
+            topics.forEach((topic, topicIndex) => {
+                totalStatements += topic.statements.length;
+                topic.statements.forEach((_, stmtIndex) => {
+                    const status = getStatus(topicIndex, stmtIndex);
+                    if (status === 'complete') complete++;
+                    else if (status === 'practice') practice++;
+                    else if (status === 'review') review++;
+                    else notStarted++;
+                });
+            });
+
+            document.getElementById('completeCount').textContent = complete;
+            document.getElementById('practiceCount').textContent = practice;
+            document.getElementById('reviewCount').textContent = review;
+            document.getElementById('notStartedCount').textContent = notStarted;
+
+            const percentage = Math.round((complete / totalStatements) * 100);
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        function toggleTopic(topicIndex) {
+            const topics = document.querySelectorAll('.topic');
+            topics[topicIndex].classList.toggle('expanded');
+        }
+
+        function toggleAll() {
+            allExpanded = !allExpanded;
+            const topics = document.querySelectorAll('.topic');
+            topics.forEach(topic => {
+                if (allExpanded) {
+                    topic.classList.add('expanded');
+                } else {
+                    topic.classList.remove('expanded');
+                }
+            });
+            
+            const btn = event.target;
+            btn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+        }
+
+        function exportProgress() {
+            const dataStr = JSON.stringify(progress, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'aqa-trilogy-biology-foundation-progress.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                progress = {};
+                saveProgress();
+                renderTopics();
+            }
+        }
+
+        loadProgress();
+        renderTopics();
+    </script>
+</body>
+</html>
